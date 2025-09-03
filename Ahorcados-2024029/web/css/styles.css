@@ -1,0 +1,249 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 3 sept 2025, 09:17:14
+    Author     : informatica
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Estilos del fondo de la página */
+body {
+    /*background-color: #1e1e1e;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: black;
+    background-size: cover;
+}
+
+/*Lineas animadas del fondo*/
+.lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 90vw;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+.line {
+    position: relative;
+    width: 1px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.line::after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 15vh;
+    width: 100%;
+    top: -50%;
+    left: 0;
+    animation: drop 7s infinite;
+    animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+.line:nth-child(1)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FF4500 75%, #FF4500 100%);
+    animation-delay: 0.5s;
+}
+.line:nth-child(2)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #32CD32 75%, #32CD32 100%);
+    animation-delay: 1s;
+}
+.line:nth-child(3)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #1E90FF 75%, #1E90FF 100%);
+    animation-delay: 1.5s;
+}
+.line:nth-child(4)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FFD700 75%, #FFD700 100%);
+    animation-delay: 2s;
+}
+.line:nth-child(5)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #8A2BE2 75%, #8A2BE2 100%);
+    animation-delay: 2.5s;
+}
+.line:nth-child(6)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #20B2AA 75%, #20B2AA 100%);
+    animation-delay: 3s;
+}
+.line:nth-child(7)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #DC143C 75%, #DC143C 100%);
+    animation-delay: 3.5s;
+}
+.line:nth-child(8)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #00FA9A 75%, #00FA9A 100%);
+    animation-delay: 4s;
+}
+.line:nth-child(9)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FF1493 75%, #FF1493 100%);
+    animation-delay: 4.5s;
+}
+.line:nth-child(10)::after {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #00BFFF 75%, #00BFFF 100%);
+    animation-delay: 5s;
+}
+
+@keyframes drop {
+    0% {
+        top: -50%;
+    }
+
+    100% {
+        top: 110%;
+    }
+}
+
+
+/* Contenedor del formulario */
+.wrapper {
+    width: 400px;
+    background: rgba(22, 15, 83, 0.488);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(241, 241, 241, 0.244);
+    border-radius: 15px;
+    padding: 40px;
+    color: white;
+    z-index: 10;
+}
+
+/* Título del formulario */
+.wrapper h1 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+}
+
+/* Contenedor de cada input */
+.wrapper .input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 25px 0;
+}
+
+/* Estilos de los inputs/cuadros de texto  */
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    font-size: 16px;
+    color: blanchedalmond;
+    padding: 0 45px 0 20px;
+    outline: none;
+}
+
+/* Cambiar borde cuando el input/cuadro de texto  está seleccionado */
+.input-box input:focus {
+    border-color: #0b5b6b;
+}
+
+/* Color del texto placeholder(Texto al que se le superponen al escribir en los cuadros de texto) */
+.input-box input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Iconos dentro de los inputs/cuadros de texto (icono de usuario y de candado/contraseña)*/
+.input-box i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Sección de recordar y olvidar contraseña */
+.wrapper .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: -10px 0 20px;
+}
+
+/* Estilo del checkbox y su texto */
+.remember-forgot label {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.remember-forgot label input {
+    margin-right: 5px;
+}
+
+/* Enlaces */
+.remember-forgot a {
+    color: #00d4ff;
+    text-decoration: none;
+}
+
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+/* Botón de login */
+.btn {
+    width: 100%;
+    height: 45px;
+    background: #017991;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 20px 0;
+}
+
+/* Efecto cuando pasas el mouse sobre el botón */
+.btn:hover {
+    background: #0099cc;
+}
+
+/* Sección de registro */
+.register-link {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.register-link p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.register-link a {
+    color: #00d4ff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Para pantallas pequeñas (móviles) */
+@media (max-width: 500px) {
+    .wrapper {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}
