@@ -1,9 +1,3 @@
-<%-- 
-    Document   : index
-    Created on : 3 sept 2025, 10:21:23
-    Author     : informatica
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

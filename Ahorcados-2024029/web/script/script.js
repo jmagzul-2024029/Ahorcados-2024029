@@ -1,60 +1,18 @@
 // Arreglo de objetos con palabras del juego con las pistas
-const palabras = [
-    {
-        palabra: "DRAGONBALL",
-        pistas: [
-            "Es una historia donde luchadores buscan esferas mágicas.",
-            "El protagonista es un guerrero de gran poder que puede cambiar su color de pelo.",
-            "La amistad, el entrenamiento y la superación personal son temas centrales de esta aventura."
-        ]
-    },
-    {
-        palabra: "MARIPOSA",
-        pistas: [
-            "Es un insecto que sufre metamorfosis.",
-            "Tiene alas coloridas y vuela de flor en flor.",
-            "Antes fue una oruga que se envolvió en un capullo"
-        ]
-    },
-    {
-        palabra: "DINOSAURIO",
-        pistas: [
-            "Reptiles que dominaron la Tierra hace millones de años.",
-            "Se extinguieron hace aprocimadamente 65 millones de años.",
-            "Hay unos carnívoros y otros herbívoros, algunos volaban"
-        ]
-    },
-    {
-        palabra: "MEDICINA",
-        pistas: [
-            "Ciencia que estudia enfermedades y su tratamiendo.",
-            "Los profesionales de esra área salvan vidas.",
-            "Incluye especualidades como cardiología y pediatría"
-        ]
-    },
-    {
-        palabra: "AVENTURA",
-        pistas: [
-            "Palabra que significa una experiencia emocionante.",
-            "Los exploradores y viajeros la buscan constantemente.",
-            "Puede involucrar riesgos y descubrimientos nuevos"
-        ]
-    }
-];
+let palabras = [];
 
 // Objeto que mantiene el estado actual del juego mientras se interactua
 let juego = {
-    palabraActual: 0,
-    palabra: '',
-    palabraAdivinada: [],
-    errores: 0,
-    aciertos: 0,
-    letrasUsadas: [],
-    iniciado: false,
-    pausado: false,
-    tiempoRestante: 300,
-    timer: null,
-    piezasReveladas: 0
+    palabraActual: 0, //palabra que se está ejecutando
+    palabra: '', //la palabra actual para adivinar
+    palabraAdivinada: [], //array con las letras que se adivinaron
+    errores: 0, //contador de letras incorrectas
+    aciertos: 0, //contador de letras correctas
+    letrasUsadas: [], //array de letras ya usadas
+    iniciado: false, //estado si el juego está iniciado
+    pausado: false, //estado si el juego está pausado
+    tiempoRestante: 300, //tiempo en segundos - 5min
+    timer: null //temporizador
 };
 
 // Referencias a elementos HTML que se actualizan durante el juego, asignar valores a cada elemento para no escribir lo mismo
@@ -85,29 +43,58 @@ const imagenesAhorcado = [
     "img/estado6.png"
 ];
 
+function cargarPalabra() {
+    fetch('Controlador') //petición al serverlet/controlador
+            .then(response => response.json()) //convertir a json
+            .then(data => {
+                //Convertir de DB al juego 
+                palabras = data.map(item => ({
+                        palabra: item.textoPalabra.toUpperCase(), //para convertir a mayúsculas
+                        pistas: [
+                            item.pista1,
+                            item.pista2,
+                            item.pista3
+                        ]
+                    }));
+                console.log('Palabras cargadas de la base de datos:', palabras);
+                mostrarMensaje(`${palabras.length} palabras cargadas, suerte intentando resolverlas 😈`, `success`);
+            })
+            .catch(error => {
+                //manejo de errores en caso de que la carga falle
+                document.write('Error al cargar palabras', error);
+                mostrarMensaje("Error: No se pudieron cargar las palabras de la base de datos", "error");
+            });
+}
+
 //Mostrar / limpiar mensajes
 function mostrarMensaje(texto = '', tipo = '') {
     if (texto) {
         elementos.gameMessage.textContent = texto;
-        elementos.gameMessage.className = `message ${tipo}`;
+        elementos.gameMessage.className = `message ${tipo}`; //aplica estilos según el tipo
         elementos.gameMessage.style.display = 'block';
     } else {
-        elementos.gameMessage.style.display = 'none';
+        elementos.gameMessage.style.display = 'none'; //oculta el mensaje
 }
+}
+
+//funcion para limpiar mensaje
+function limpiarMensaje() {
+    mostrarMensaje();
 }
 
 // Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', function () { //Espera a que el html se cargue
     crearAlfabeto(); //Llama a la funcion que crea el teclado virtual
     configurarEventos(); //Asigna los eventos de clic a los botones
-    reiniciarJuego();
-    mostrarMensaje("Bienvenidos al ahorcado, presiona iniciar para comenzar, 'info'");
+    cargarPalabra(); //para cargar la palabra de la base de datos
+    reiniciarJuego(); //inicializar el estado del juego
+    mostrarMensaje("Bienvenidos al ahorcado, presiona iniciar para comenzar", 'info');
 });
 
 // Crear los botones del teclado virtual para cada letra
 function crearAlfabeto() {
     const letras = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
-    elementos.alfabeto.innerHTML = '';
+    elementos.alfabeto.innerHTML = ''; //limpia el contenedor
 
     letras.forEach(letra => {
         const btn = document.createElement('button'); //Crea un boton
@@ -115,13 +102,16 @@ function crearAlfabeto() {
         btn.textContent = letra;
         btn.id = `letra-${letra}`; //Para asignar un id
         btn.onclick = () => adivinarLetra(letra); //Asignar una fnci[on al hacer clic
-        elementos.alfabeto.appendChild(btn); //Agregar al DOOM
+        elementos.alfabeto.appendChild(btn); //Agregar al DOM
     });
 }
 
-//Configurar los eventos
+//Configurar los eventos listener del juego
 function configurarEventos() {
+    //evento para iniciar el juego
     elementos.startBtn.onclick = iniciarJuego;
+
+    //evento para reiniciar
     elementos.restartBtn.onclick = () => {
         if (confirm('Estás seguro de que quieres reiniciar?')) {
             terminarJuego(); //detener el juego actual
@@ -129,7 +119,9 @@ function configurarEventos() {
             mostrarMensaje('Juego reiniciado, preciona iniciar para comenzar de nuevo', 'info');
         }
     };
-    elementos.pauseBtn.onclick = alternarPausa;
+
+    elementos.pauseBtn.onclick = alternarPausa; //evento para pausar/reanudar
+    //evento para salir
     elementos.exitBtn.onclick = () => {
         if (confirm('Estás seguro de que quieres salir del juego?')) {
             terminarJuego();
@@ -137,10 +129,11 @@ function configurarEventos() {
         }
     };
 
-    //Teclado
+    //evento para el teclado físico 
     document.addEventListener('keydown', (e) => {
         if (juego.iniciado && !juego.pausado) {
             const letra = e.key.toUpperCase();
+            //verifica que sea una letra válida incluyengo ñ y acentos
             if (letra.match(/[A-ZÑÁÉÍÓÚ]/) && letra.length === 1) {
                 adivinarLetra(letra);
             }
@@ -150,42 +143,58 @@ function configurarEventos() {
 
 //Iniciar juego
 function iniciarJuego() {
+    //para verificar si hay palabras cargadas
+    if (palabras.length === 0) {
+        mostrarMensaje("No hay palabras disponibles", 'error');
+        return;
+    }
+    //cambia el estado del juego
     juego.iniciado = true;
     juego.pausado = false;
-    cargarPalabraActual();
-    iniciarTimer();
-    actualizarPantalla();
-    mostrarMensaje("Juego iniciado, adivina la palabra correcta", 'succes');
+
+    cargarPalabraActual();//carga la primera palabra
+    iniciarTimer(); //inicia el temporizador
+    actualizarPantalla(); //actualiza la interfaz
+    mostrarMensaje("Juego iniciado, adivina la palabra correcta", 'success');
 
     elementos.startBtn.style.display = 'none';
     elementos.pauseBtn.style.display = 'inline-block';
 }
 
 function cargarPalabraActual() {
+    //verificar si hay palabras
+    if (palabras.length === 0) {
+        mostrarMensaje("No hay palabras disponibles", 'error');
+        return;
+    }
+
     const dato = palabras[juego.palabraActual];
     juego.palabra = dato.palabra;
+    //array de guines bajos de la cantidad de letras de la palabra
     juego.palabraAdivinada = Array(juego.palabra.length).fill('_');
     juego.letrasUsadas = [];
     juego.errores = 0;
 
-    //mostrar pistas
+    //para mostrar las pistas
     elementos.hintsList.innerHTML = '';
     dato.pistas.forEach(pista => {
         const li = document.createElement('li');
         li.textContent = pista;
         elementos.hintsList.appendChild(li);
     });
-    reiniciarAlfabeto();
+    reiniciarAlfabeto(); //reactiva todas las letras
 }
 
-// Adivinar letra
+//para adivinar letra
 function adivinarLetra(letra) {
+    //verificsar condiciones para poder jugar
     if (!juego.iniciado || juego.pausado || juego.letrasUsadas.includes(letra)) {
         return;
     }
+    //poner la letra como ya usada
     juego.letrasUsadas.push(letra);
     const boton = document.getElementById(`letra-${letra}`);
-    boton.disabled = true;
+    boton.disabled = true; //para desactivar el botón
 
     if (juego.palabra.includes(letra)) {
         for (let i = 0; i < juego.palabra.length; i++) {
@@ -194,25 +203,25 @@ function adivinarLetra(letra) {
             }
         }
         juego.aciertos++;
-        boton.classList.add('correct');
-        mostrarMensaje(`¡Bien hecho! "${letra}" está en la palabra.`, 'success');
+        boton.classList.add('Correct'); //estilo para el acierto
+        mostrarMensaje(`Bien hecho! "${letra}" está en la palabra`, 'success');
 
+        //ver si la palabra está completa
         if (!juego.palabraAdivinada.includes('_')) {
             setTimeout(() => siguientePalabra(), 1500);
         }
     } else {
+        //ver la letra incorrecta
         juego.errores++;
-        boton.classList.add('wrong');
-        mostrarMensaje(`La letra "${letra}" no está.`, 'error');
+        boton.classList.add('wrong'); //estilo para el error
+        mostrarMensaje(`La letra "${letra}" no está en la palabra`, `error`);
 
-        if (juego.errores >= 6) {
+        if (juego.errores >= 6) { //ver si se acabaron los intentos, máximo de 6
             setTimeout(() => juegoTerminado(), 1000);
         }
     }
-
     actualizarPantalla();
 }
-
 
 //Pasar a la siguiente palabra
 function siguientePalabra() {
@@ -221,7 +230,7 @@ function siguientePalabra() {
         juego.tiempoRestante = 300;
         cargarPalabraActual();
         actualizarPantalla();
-        mostrarMensaje(`Correcto, siguiente palabra: ${juego.palabraActual + 1}/${palabra.length}`, 'success');
+        mostrarMensaje(`Correcto, siguiente palabra: ${juego.palabraActual + 1}/${palabras.length}`, 'success');
     } else {
         mostrarMensaje('Felicidades, completaste todas las palabras');
         terminarJuego();
@@ -229,18 +238,23 @@ function siguientePalabra() {
 }
 
 function actualizarPantalla() {
+    //Actualiza todos los elementos visuales
     elementos.wordDisplay.textContent = juego.palabraAdivinada.join(' ');
     elementos.currentWord.textContent = juego.palabraActual + 1;
     elementos.errorsCount.textContent = juego.errores;
     elementos.correctGuessesCount.textContent = juego.aciertos;
+    //Para cambiar la imagen del ahorcado si hay errores
     elementos.hangmanImage.src = imagenesAhorcado[juego.errores] || imagenesAhorcado[6];
 }
 
 // Reiniciar juego
 function reiniciarJuego() {
+    //limpiar el temporizador
     if (juego.timer) {
         clearInterval(juego.timer);
     }
+
+    //reinicia el objeto del estado de juego
     juego = {
         palabraActual: 0,
         palabra: '',
@@ -254,6 +268,7 @@ function reiniciarJuego() {
         timer: null
     };
 
+    //reinicia la parte visual del juego
     reiniciarAlfabeto();
     elementos.wordDisplay.textContent = '_ _ _ _ _ _ _ _';
     elementos.hintsList.innerHTML = '<li>Presiona Iniciar para comenzar</li>';
@@ -261,6 +276,7 @@ function reiniciarJuego() {
     elementos.contador.textContent = 'Tiempo 5:00';
     limpiarMensaje();
 
+    //permite ver de nuevo los botones
     elementos.startBtn.style.display = 'inline-block';
     elementos.pauseBtn.style.display = 'none';
 }
@@ -268,26 +284,27 @@ function reiniciarJuego() {
 function reiniciarAlfabeto() {
     const botones = document.querySelectorAll('.letter-btn');
     botones.forEach(btn => {
-        btn.disabled = false;
-        btn.className = 'letter-btn';
+        btn.disabled = false; //activa de nuevo el botón
+        btn.className = 'letter-btn'; //para quitar los estilos/colores de correcto/incorrecto
     });
 }
 ;
 
-//Temporizador
+//Temporizador de 5 min
 function iniciarTimer() {
     actualizarContador();
     juego.timer = setInterval(() => {
-        if (!juego.pausado) {
+        if (!juego.pausado) { //cuenta solo si no está pasado
             juego.tiempoRestante--;
             actualizarContador();
+            //verificar si se acabó el tiempo
             if (juego.tiempoRestante <= 0) {
                 clearInterval(juego.timer);
                 mostrarMensaje("⏰ ¡Se acabó el tiempo!", 'error');
                 setTimeout(() => juegoTerminado(), 1000);
             }
         }
-    }, 1000);
+    }, 1000); //y se ejecuta cada segundo
 }
 
 function actualizarContador() {
@@ -302,10 +319,10 @@ function actualizarContador() {
 //terminar el juegop
 function juegoTerminado() {
     mostrarMensaje(`juego terminado, la palabra era: "${juego.palabra}"`, 'error');
-    setTimeout(() => reiniciarJuego(), 3000);
+    setTimeout(() => reiniciarJuego(), 3000); // reinicia el juego automáticamente
 }
 
-//Pausar / reanudar
+//Pausar / reanudar el juego
 function alternarPausa() {
     if (!juego.iniciado) {
         return;
@@ -324,31 +341,26 @@ function alternarPausa() {
 // Terminar
 function terminarJuego() {
     juego.iniciado = false;
-    clearInterval(juego.timer);
+    clearInterval(juego.timer); // detiene el temporizador
 
-    //desactiva todas las letras del teclado
-    document.querySelectorAll('.letter-btn').forEach(btn => btn.disabled = true);
+    document.querySelectorAll('.letter-btn').forEach(btn => btn.disabled = true);//desactiva todas las letras del teclado
 
-    //mostrar boton iniciar
+    // volver a mostrar boton iniciar
     elementos.startBtn.style.display = 'inline-block';
     elementos.pauseBtn.style.display = 'none';
-
 }
 
 function resolverPalabra() {
     if (!juego.iniciado || juego.pausado) {
         return;
-    }
-    //Revelar todas las letras de la palabra
-    juego.palabraAdivinada = juego.palabra.split('');
-    // Marcar todos los aciertos según el largo de la palabra
-    juego.aciertos = juego.palabra.length;
-    //desactiva todas las letras del teclado
+    }//Revelar todas las letras de la palabra
+    juego.palabraAdivinada = juego.palabra.split('');// Marcar todos los aciertos según el largo de la palabra
+    juego.aciertos = juego.palabra.length; //prar desactivar todas las letras del teclado
+
     document.querySelectorAll('.letter-btn').forEach(btn => btn.disabled = true);
     actualizarPantalla();
     mostrarMensaje(`¡Palabra resuelta! Era "${juego.palabra}".`, 'success');
-    //pasa a la siguiente palabra después de 1.5 segundos
-    setTimeout(() => siguientePalabra(), 1500);
+    setTimeout(() => siguientePalabra(), 1500); //para pasar a la siguiente palabra después de 1.5 segundos
 }
 
 // Usuario y contraseña
@@ -356,16 +368,15 @@ const usuarioValido = "admin";
 const claveValida = "1234";
 
 document.getElementById("loginForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Evita que se recargue la página
+    event.preventDefault(); //para evitar que recargue la página
 
     const usuario = document.getElementById("usuario").value;
     const clave = document.getElementById("clave").value;
 
     if (usuario === usuarioValido && clave === claveValida) {
-        alert("¡Bienvenido al juego de ahorcado!");
-        // Aquí puedes redirigir, por ejemplo:
-        window.location.href = "Juego.jsp";
+        alert("¡Bienvenido al juego de ahorcado!😈");
+        window.location.href = "Juego.jsp"; //para redirigir al juego
     } else {
-        alert("Usuario o contraseña incorrectos");
+        alert("Usuario o contraseña incorrectos, verifica de nuevo tus datos.");
     }
 });

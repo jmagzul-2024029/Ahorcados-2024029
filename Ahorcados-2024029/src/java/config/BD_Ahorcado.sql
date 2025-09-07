@@ -27,6 +27,8 @@ call sp_AgregarPalabra('MARIPOSA','Es un insecto que sufre metamorfosis.','Tiene
 call sp_AgregarPalabra('DINOSAURIO','Reptiles que dominaron la Tierra hace millones de años.','Se extinguieron hace aprocimadamente 65 millones de años.','Hay unos carnívoros y otros herbívoros, algunos volaban.');
 call sp_AgregarPalabra('MEDICINA','Ciencia que estudia enfermedades y su tratamiendo.','Los profesionales de esra área salvan vidas.','Incluye especualidades como cardiología y pediatría');
 call sp_AgregarPalabra('AVENTURA','Palabra que significa una experiencia emocionante','Los exploradores y viajeros la buscan constantemente.','Puede involucrar riesgos y descubrimientos nuevos');
+call sp_AgregarPalabra('BIBLIOTECA','Es un lugar donde se guardan libros','Suele ser un lugar silecioso.','Se puede estudiar o investigar en ese lugar');
+call sp_AgregarPalabra('PASAPORTE','Documento necesario para viajar a otro país','Contiene fotografía y datos personales.','Lo revisan en migración');
 
 Delimiter $$
 create procedure sp_ListarPalabras()
