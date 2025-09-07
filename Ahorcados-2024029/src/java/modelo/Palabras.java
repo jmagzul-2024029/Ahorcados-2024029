@@ -8,11 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- *
- * @author informatica
- */
-
 @Entity
 @Table(name = "Palabras")
 public class Palabras implements Serializable {

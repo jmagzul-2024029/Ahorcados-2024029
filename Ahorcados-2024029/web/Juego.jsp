@@ -1,9 +1,3 @@
-<%-- 
-    Document   : Juego
-    Created on : 3 sept 2025, 09:48:51
-    Author     : informatica
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -28,7 +22,7 @@
         </div>
 
         <div class="container">
-            <h1>🪢 Juego de Ahorcado</h1> 
+            <h1>🪢🧍 Juego de Ahorcado 🧍🪢</h1> 
 
             <div class="stats"><!--Estadísticas-->
                 <div class="stat">
@@ -50,15 +44,16 @@
             <!--Controles de juego-->
             <div class="controls">
                 <button id="startBtn">▶ Iniciar</button>
-                <button id="restartBtn">🔁 Reiniciar</button>
+                <button id="restartBtn"><svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3V8M3 8H8M3 8L6 5.29168C7.59227 3.86656 9.69494 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.71683 21 4.13247 18.008 3.22302 14" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg> Reiniciar</button>
                 <button id="pauseBtn">⏸ Pausa</button>
-                <button id="exitBtn">✖️ Salir</button>
+                <button id="exitBtn"><svg width="20px" height="20px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#ffffff" d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"></path></g></svg>Salir</button>
             </div>
 
             <!--imagen del ahorcado-->
             <div class="contenido">
                 <div class="juego">
-                    <h3>Estado del Ahorcado</h3>
                     <div class="hangman-container">
                         <img id="hangmanImage" alt="Estado del ahorcado">
                     </div>

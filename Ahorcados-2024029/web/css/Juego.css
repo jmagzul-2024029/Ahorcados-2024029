@@ -1,7 +1,3 @@
-/* 
-    Created on : 2 sept 2025, 08:34:53
-    Author     : informatica
-*/
 * {
     box-sizing: border-box;
     color: white;
@@ -171,35 +167,38 @@ body {
 
 .controls button {
     padding: 10px 20px;
-    border: 2px solid;
-    border-radius: 8px;
+    border-radius: 2rem;
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
+    border: none;
+    font-size: 1rem;
+    align-items: center;
+    justify-content: center;
+    display: inline-flex;
+    gap: 8px;
+}
+
+.controls svg{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
 }
 
 #startBtn {
     background: #46E925;
-    border-color: #46E925;
-    color: black;
 }
 
 #restartBtn {
     background: #026fc3;
-    border-color: #0488ed;
-    color: black;
 }
 
 #pauseBtn {
     background: #026fc3;
-    border-color: #0488ed;
-    color: black;
 }
 
 #exitBtn {
     background: #ba2d2d;
-    border-color: #993838;
-    color: black;
 }
 
 .controls button:hover {

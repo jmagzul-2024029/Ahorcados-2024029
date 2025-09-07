@@ -16,8 +16,9 @@ public class PalabrasDAO {
     int resp;
 
     public List<Palabras> listar() {
-        String sql = "{call sp_ListarPalabras()}";
         List<Palabras> listarPalabras = new ArrayList<>();
+        String sql = "{call sp_ListarPalabras()}";
+
         try {
             con = cn.Conexion();
             ps = con.prepareStatement(sql);
@@ -52,10 +53,19 @@ public class PalabrasDAO {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try { if(ps != null) ps.close(); } catch(Exception e) {}
-            try { if(con != null) con.close(); } catch(Exception e) {}
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (Exception e) {
+            }
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+            }
         }
-
         return resp;
     }
 }
