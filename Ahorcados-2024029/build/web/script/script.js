@@ -362,21 +362,3 @@ function resolverPalabra() {
     mostrarMensaje(`¡Palabra resuelta! Era "${juego.palabra}".`, 'success');
     setTimeout(() => siguientePalabra(), 1500); //para pasar a la siguiente palabra después de 1.5 segundos
 }
-
-// Usuario y contraseña
-const usuarioValido = "admin";
-const claveValida = "1234";
-
-document.getElementById("loginForm").addEventListener("submit", function (event) {
-    event.preventDefault(); //para evitar que recargue la página
-
-    const usuario = document.getElementById("usuario").value;
-    const clave = document.getElementById("clave").value;
-
-    if (usuario === usuarioValido && clave === claveValida) {
-        alert("¡Bienvenido al juego de ahorcado!😈");
-        window.location.href = "Juego.jsp"; //para redirigir al juego
-    } else {
-        alert("Usuario o contraseña incorrectos, verifica de nuevo tus datos.");
-    }
-});

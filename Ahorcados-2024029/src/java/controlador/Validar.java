@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controlador;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,75 +13,31 @@ import javax.servlet.http.HttpSession;
 import modelo.Palabras;
 import modelo.PalabrasDAO;
 
-/**
- *
- * @author informatica
- */
 @WebServlet(name = "Validar", urlPatterns = {"/Validar"})
 public class Validar extends HttpServlet {
 
     PalabrasDAO palabrasDAO = new PalabrasDAO();
     Palabras palabras = new Palabras();
+    
+    // Configuración del puerto - cambia aquí si cambias el puerto de Spring
+    private static final String SPRING_PORT = "8081";
+    private static final String SPRING_URL = "http://localhost:" + SPRING_PORT + "/api/Usuarios/validar";
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Validar</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Validar at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         String accion = request.getParameter("accion");
+        
         if ("Ingresar".equalsIgnoreCase(accion)) {
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            String email = request.getParameter("usuario");
+            String password = request.getParameter("contrasena");
 
-            if (palabras != null) {
+            // Validar con Spring Boot
+            if (validarUsuario(email, password)) {
                 HttpSession session = request.getSession();
                 session.setAttribute("cuentas", palabras);
+                session.setAttribute("usuarioEmail", email);
                 request.getRequestDispatcher("Juego.jsp").forward(request, response);
             } else {
                 request.setAttribute("error", "Usuario o contraseña incorrectos");
@@ -94,14 +48,32 @@ public class Validar extends HttpServlet {
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+private boolean validarUsuario(String email, String password) {
+    try {
+        URL url = new URL(SPRING_URL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+        
+        String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
+        System.out.println("Enviando JSON: " + json); // AÑADIR
+        System.out.println("URL: " + SPRING_URL); // AÑADIR
+        
+        conn.getOutputStream().write(json.getBytes());
+        
+        int responseCode = conn.getResponseCode();
+        System.out.println("Response Code: " + responseCode); // AÑADIR
+        
+        return responseCode == 200;
+    } catch (Exception e) {
+        System.out.println("Error en validarUsuario: " + e.getMessage()); // AÑADIR
+        return false;
+    }
+}
+
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Servlet para validar usuarios";
+    }
 }
