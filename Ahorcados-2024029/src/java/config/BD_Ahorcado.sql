@@ -11,6 +11,13 @@ Create table Palabras(
 	primary key PK_idPalabra(idPalabra)
 );
 
+CREATE TABLE Usuarios (
+    idUsuario int auto_increment,
+    correoUsuario varchar(255) not null,
+    contrasena varchar(255) not null,
+    primary key PK_idUsuario(idUsuario)
+);
+
 Delimiter $$
 Create procedure sp_AgregarPalabra(in p_textoPalabra varchar(255), 
 	in p_pista1 varchar(255), 
@@ -37,3 +44,29 @@ begin
 end$$
 Delimiter ;
 call sp_ListarPalabras();
+
+Delimiter $$
+create procedure sp_AgregarUsuario(
+    IN p_correoUsuario VARCHAR(255),
+    IN p_contrasena VARCHAR(255)
+)
+begin
+    insert into Usuarios(correoUsuario, contrasena)
+    values(p_correoUsuario, p_contrasena);
+end$$
+Delimiter ;
+
+CALL sp_AgregarUsuario('juan.perez@email.com', '1234pass');
+CALL sp_AgregarUsuario('maria.lopez@email.com', 'abcD!2022');
+CALL sp_AgregarUsuario('carlos.mendoza@email.com', 'miContraseñaSegura');
+CALL sp_AgregarUsuario('laura.gomez@email.com', 'qwerty123');
+CALL sp_AgregarUsuario('admin@juegoahorcado.com', 'admin2025');
+
+Delimiter $$
+create procedure sp_ListarUsuarios()
+begin
+    select * from Usuarios;
+end$$
+Delimiter ;
+
+CALL sp_ListarUsuarios();
