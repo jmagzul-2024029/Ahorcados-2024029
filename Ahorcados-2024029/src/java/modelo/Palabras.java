@@ -11,34 +11,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Palabras")
 public class Palabras implements Serializable {
-    
-        @Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-        
+
     @Column(name = "idPalabra")
     private Integer idPalabra;
-        
+
     @Column(name = "textoPalabra")
     private String textoPalabra;
 
     @Column(name = "pista1")
     private String pista1;
-    
+
     @Column(name = "pista2")
     private String pista2;
-    
+
     @Column(name = "pista3")
     private String pista3;
+
+    @Column(name = "imagen")
+    private String imagen;
 
     public Palabras() {
     }
 
-    public Palabras(Integer idPalabra, String textoPalabra, String pista1, String pista2, String pista3) {
+    public Palabras(Integer idPalabra, String textoPalabra, String pista1, String pista2, String pista3, String imagen) {
         this.idPalabra = idPalabra;
         this.textoPalabra = textoPalabra;
         this.pista1 = pista1;
         this.pista2 = pista2;
         this.pista3 = pista3;
+        this.imagen = imagen;
     }
 
     public Integer getIdPalabra() {
@@ -81,8 +85,18 @@ public class Palabras implements Serializable {
         this.pista3 = pista3;
     }
 
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
     @Override
     public String toString() {
-        return "Palabras{" + "idPalabra=" + idPalabra + ", textoPalabra=" + textoPalabra + ", pista1=" + pista1 + ", pista2=" + pista2 + ", pista3=" + pista3 + '}';
+        return "Palabras{" + "idPalabra=" + idPalabra + ", textoPalabra=" + textoPalabra + ", pista1=" + pista1 + ", pista2=" + pista2 + ", pista3=" + pista3 + ", imagen=" + imagen + '}';
     }
+    
+   
 }

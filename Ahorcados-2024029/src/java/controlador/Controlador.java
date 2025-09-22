@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import modelo.Palabras;
 import modelo.PalabrasDAO;
 
-
 @WebServlet(name = "Controlador", urlPatterns = {"/Controlador"})
 public class Controlador extends HttpServlet {
-
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -32,7 +30,6 @@ public class Controlador extends HttpServlet {
             out.println("</html>");
         }
     }
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -55,7 +52,8 @@ public class Controlador extends HttpServlet {
                         .append("\"textoPalabra\":\"").append(p.getTextoPalabra()).append("\",")
                         .append("\"pista1\":\"").append(p.getPista1()).append("\",")
                         .append("\"pista2\":\"").append(p.getPista2()).append("\",")
-                        .append("\"pista3\":\"").append(p.getPista3()).append("\"")
+                        .append("\"pista3\":\"").append(p.getPista3()).append("\",")
+                        .append("\"imagen\":\"").append(p.getImagen()).append("\"")
                         .append("}");
                 if (i < lista.size() - 1) {
                     json.append(",");

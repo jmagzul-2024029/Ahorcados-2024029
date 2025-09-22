@@ -31,6 +31,7 @@ public class PalabrasDAO {
                 pl.setPista1(rs.getString(3));
                 pl.setPista2(rs.getString(4));
                 pl.setPista3(rs.getString(5));
+                pl.setImagen(rs.getString(6));
                 listarPalabras.add(pl);
             }
         } catch (Exception e) {
@@ -49,6 +50,8 @@ public class PalabrasDAO {
             ps.setString(2, p.getPista1());
             ps.setString(3, p.getPista2());
             ps.setString(4, p.getPista3());
+            ps.setString(5, p.getImagen());
+
             resp = ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
