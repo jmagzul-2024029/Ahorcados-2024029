@@ -49,12 +49,9 @@ function cargarPalabra() {
             .then(data => {
                 //Convertir de DB al juego 
                 palabras = data.map(item => ({
-                        palabra: item.textoPalabra.toUpperCase(), //para convertir a mayúsculas
-                        pistas: [
-                            item.pista1,
-                            item.pista2,
-                            item.pista3
-                        ]
+                        palabra: item.textoPalabra.toUpperCase(),
+                        pistas: [item.pista1, item.pista2, item.pista3],
+                        imagen: item.imagen  // este debe ser el nombre o ruta de la imagen para esa palabra
                     }));
                 console.log('Palabras cargadas de la base de datos:', palabras);
                 mostrarMensaje(`${palabras.length} palabras cargadas, suerte intentando resolverlas 😈`, `success`);
@@ -208,8 +205,16 @@ function adivinarLetra(letra) {
 
         //ver si la palabra está completa
         if (!juego.palabraAdivinada.includes('_')) {
-            setTimeout(() => siguientePalabra(), 1500);
+            const imagenResultado = document.getElementById('imagenResultado');
+            imagenResultado.src = `img/${palabras[juego.palabraActual].imagen}`;
+            imagenResultado.style.display = 'block';
+
+            setTimeout(() => {
+                imagenResultado.style.display = 'none';
+                siguientePalabra();
+            }, 3000);
         }
+
     } else {
         //ver la letra incorrecta
         juego.errores++;
@@ -361,4 +366,26 @@ function resolverPalabra() {
     actualizarPantalla();
     mostrarMensaje(`¡Palabra resuelta! Era "${juego.palabra}".`, 'success');
     setTimeout(() => siguientePalabra(), 1500); //para pasar a la siguiente palabra después de 1.5 segundos
+}
+
+//para mostrar la imagen:
+function mostrarImagenResultado(tipo) {
+    const imagen = document.getElementById('imagenResultado');
+
+    if (tipo === 'ganar') {
+        imagen.src = '/images/ganaste.png'; // Asegúrate que esta ruta sea válida
+    } else if (tipo === 'rendirse') {
+        imagen.src = '/img/.png'; // Cambia el nombre según tu imagen
+    }
+
+    imagen.style.display = 'block';
+}
+
+// Llama esta función cuando el jugador gane o se rinda
+function verificarResultado(juegoGanado, jugadorSeRindio) {
+    if (juegoGanado) {
+        mostrarImagenResultado('ganar');
+    } else if (jugadorSeRindio) {
+        mostrarImagenResultado('rendirse');
+    }
 }
