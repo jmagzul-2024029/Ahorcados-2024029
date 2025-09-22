@@ -15,7 +15,7 @@ public class Usuarios {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //que se genere el id porque es auto increment
     private Integer idUsuario;
 
-    @Column(name = "correoUsuario")
+    @Column(name = "correoUsuario", unique = true)
     @Email(message = "Debe ser un correo electrónico válido")
     // para que funcione hasta la parte del dominio          //que tenga al menos dos letras después del punto
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
@@ -29,8 +29,6 @@ public class Usuarios {
     private String contrasena;
 
     //setters and getters
-
-
     public Integer getIdUsuario() {
         return idUsuario;
     }

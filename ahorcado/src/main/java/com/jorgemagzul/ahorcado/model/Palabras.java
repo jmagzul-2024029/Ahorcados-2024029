@@ -23,6 +23,9 @@ public class Palabras {
     @Column(name = "pista3") //de la base de datos, si no existe entonces la crea
     private String pista3; //declarar lo de la base de datos pero ya en camelCase
 
+    @Column(name = "imagen") //de la base de datos, si no existe entonces la crea
+    private String imagen; //declarar lo de la base de datos pero ya en camelCase
+
     //setters and getters
 
     public Integer getIdPalabra() {
@@ -63,5 +66,13 @@ public class Palabras {
 
     public void setPista3(String pista3) {
         this.pista3 = pista3;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

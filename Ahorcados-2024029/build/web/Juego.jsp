@@ -41,6 +41,9 @@
 
             <div id="contador"> Tiempo 5:00</div>
 
+            <!--Mensajes-->
+            <div id="gameMessage" class="mensaje"></div>
+
             <!--Controles de juego-->
             <div class="controls">
                 <button id="startBtn">▶ Iniciar</button>
@@ -56,6 +59,11 @@
                         <img id="hangmanImage" alt="Estado del ahorcado">
                     </div>
                 </div>
+
+                    <div id="resultado">
+                        <!-- mostrar la imagen del resultado-->
+                        <img id="imagenResultado" src="" alt="Resultado del juego">
+                    </div>
             </div>
 
             <!--Mostrar la palabra-->
@@ -71,9 +79,6 @@
 
             <!--Alfabeto-->
             <div id="alfabeto" class="alfabeto"></div>
-
-            <!--Mensajes-->
-            <div id="gameMessage" class="mensaje"></div>
 
             <!--Botón resolver-->
             <button class="button" onclick="resolverPalabra()">

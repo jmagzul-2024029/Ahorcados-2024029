@@ -49,6 +49,7 @@ public class PalabrasServiceImpl implements PalabrasService {
             existinPalabras.setPista1(palabras.getPista1());
             existinPalabras.setPista2(palabras.getPista2());
             existinPalabras.setPista3(palabras.getPista3());
+            existinPalabras.setImagen(palabras.getImagen());
 
             return palabrasRepository.save(existinPalabras);
         }
