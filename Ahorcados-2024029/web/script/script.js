@@ -15,8 +15,9 @@ let juego = {
     timer: null //temporizador
 };
 
-// Referencias a elementos HTML que se actualizan durante el juego, asignar valores a cada elemento para no escribir lo mismo
+// Objeto que almacena referencias a los elementos del HTML para actualizar la interfaz
 const elementos = {
+    resolverBtn: document.getElementById('resolverBtn'), //boton para resolver la palabra actual
     startBtn: document.getElementById('startBtn'), //boton de iniciar juego
     restartBtn: document.getElementById('restartBtn'), //boton para reiniciar
     pauseBtn: document.getElementById('pauseBtn'), //boton para pausar o reanudar
@@ -43,18 +44,21 @@ const imagenesAhorcado = [
     "img/estado6.png"
 ];
 
+/*Funcion para cargar las palabras, 
+ * se mapean los datos recibidos para adoptarlos al formato requerido
+*/
 function cargarPalabra() {
     fetch('Controlador') //petición al serverlet/controlador
             .then(response => response.json()) //convertir a json
             .then(data => {
-                //Convertir de DB al juego 
+                //mapear datos de DB al formato del juego 
                 palabras = data.map(item => ({
-                        palabra: item.textoPalabra.toUpperCase(),
-                        pistas: [item.pista1, item.pista2, item.pista3],
-                        imagen: item.imagen  // este debe ser el nombre o ruta de la imagen para esa palabra
+                        palabra: item.textoPalabra.toUpperCase(), //convertir a palabras mayúsculas
+                        pistas: [item.pista1, item.pista2, item.pista3], //array con las 3 pistas
+                        imagen: item.imagen  // imagen de la palabra
                     }));
                 console.log('Palabras cargadas de la base de datos:', palabras);
-                mostrarMensaje(`${palabras.length} palabras cargadas, suerte intentando resolverlas 😈`, `success`);
+                mostrarMensaje(`${palabras.length} palabras cargadas, suerte intentando resolverlas`, `success`);
             })
             .catch(error => {
                 //manejo de errores en caso de que la carga falle
@@ -68,7 +72,7 @@ function mostrarMensaje(texto = '', tipo = '') {
     if (texto) {
         elementos.gameMessage.textContent = texto;
         elementos.gameMessage.className = `message ${tipo}`; //aplica estilos según el tipo
-        elementos.gameMessage.style.display = 'block';
+        elementos.gameMessage.style.display = 'block'; //mostrar mensaje
     } else {
         elementos.gameMessage.style.display = 'none'; //oculta el mensaje
 }
@@ -91,10 +95,10 @@ document.addEventListener('DOMContentLoaded', function () { //Espera a que el ht
 // Crear los botones del teclado virtual para cada letra
 function crearAlfabeto() {
     const letras = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
-    elementos.alfabeto.innerHTML = ''; //limpia el contenedor
+    elementos.alfabeto.innerHTML = ''; //limpia el contenedor del teclado
 
     letras.forEach(letra => {
-        const btn = document.createElement('button'); //Crea un boton
+        const btn = document.createElement('button'); //Crea un boton para cada letra
         btn.className = 'letter-btn';
         btn.textContent = letra;
         btn.id = `letra-${letra}`; //Para asignar un id
@@ -103,7 +107,7 @@ function crearAlfabeto() {
     });
 }
 
-//Configurar los eventos listener del juego
+//Configurar los eventos listener del juego para los botones y teclado físico
 function configurarEventos() {
     //evento para iniciar el juego
     elementos.startBtn.onclick = iniciarJuego;
@@ -136,6 +140,13 @@ function configurarEventos() {
             }
         }
     });
+
+    //evento para cerrar sesión
+    document.getElementById('logOut').onclick = () => {
+        if (confirm('Seguro que quieres cerrar sesión?')) {
+            window.location.href = 'index.jsp';
+        }
+    };
 }
 
 //Iniciar juego
@@ -148,7 +159,8 @@ function iniciarJuego() {
     //cambia el estado del juego
     juego.iniciado = true;
     juego.pausado = false;
-
+    
+    document.getElementById('imagenResultado').style.display = 'none';
     cargarPalabraActual();//carga la primera palabra
     iniciarTimer(); //inicia el temporizador
     actualizarPantalla(); //actualiza la interfaz
@@ -156,6 +168,8 @@ function iniciarJuego() {
 
     elementos.startBtn.style.display = 'none';
     elementos.pauseBtn.style.display = 'inline-block';
+    elementos.resolverBtn.style.display = 'inline-block';
+
 }
 
 function cargarPalabraActual() {
@@ -167,7 +181,7 @@ function cargarPalabraActual() {
 
     const dato = palabras[juego.palabraActual];
     juego.palabra = dato.palabra;
-    //array de guines bajos de la cantidad de letras de la palabra
+    //guines bajos de la cantidad de letras de la palabra
     juego.palabraAdivinada = Array(juego.palabra.length).fill('_');
     juego.letrasUsadas = [];
     juego.errores = 0;
@@ -212,7 +226,7 @@ function adivinarLetra(letra) {
             setTimeout(() => {
                 imagenResultado.style.display = 'none';
                 siguientePalabra();
-            }, 3000);
+            }, 1000);
         }
 
     } else {
@@ -232,13 +246,18 @@ function adivinarLetra(letra) {
 function siguientePalabra() {
     if (juego.palabraActual < palabras.length - 1) {
         juego.palabraActual++;
-        juego.tiempoRestante = 300;
+        juego.tiempoRestante = 120;
         cargarPalabraActual();
         actualizarPantalla();
         mostrarMensaje(`Correcto, siguiente palabra: ${juego.palabraActual + 1}/${palabras.length}`, 'success');
     } else {
-        mostrarMensaje('Felicidades, completaste todas las palabras');
-        terminarJuego();
+        mostrarMensaje('Felicidades, completaste todas las palabras', 'success'); //mostrar mensaje de felicitaciones
+        const imagenResultado = document.getElementById('imagenResultado');
+        imagenResultado.src = 'img/ganaste.png'; //cargar imagen de felicitaciones
+        imagenResultado.style.display = 'block'; //estilo de imagen
+        imagenResultado.style.background = 'White'; //estilo de imagen
+        imagenResultado.style.border = 'none'; //estilo de imagen
+        terminarJuego();//terminr juego
     }
 }
 
@@ -269,7 +288,7 @@ function reiniciarJuego() {
         letrasUsadas: [],
         iniciado: false,
         pausado: false,
-        tiempoRestante: 300,
+        tiempoRestante: 120,
         timer: null
     };
 
@@ -278,12 +297,14 @@ function reiniciarJuego() {
     elementos.wordDisplay.textContent = '_ _ _ _ _ _ _ _';
     elementos.hintsList.innerHTML = '<li>Presiona Iniciar para comenzar</li>';
     elementos.hangmanImage.src = imagenesAhorcado[0];
-    elementos.contador.textContent = 'Tiempo 5:00';
+    elementos.contador.textContent = 'Tiempo 2:00';
     limpiarMensaje();
+    document.getElementById('imagenResultado').style.display = 'none';
 
     //permite ver de nuevo los botones
     elementos.startBtn.style.display = 'inline-block';
     elementos.pauseBtn.style.display = 'none';
+    elementos.resolverBtn.style.display = 'none';
 }
 
 function reiniciarAlfabeto() {
@@ -299,7 +320,7 @@ function reiniciarAlfabeto() {
 function iniciarTimer() {
     actualizarContador();
     juego.timer = setInterval(() => {
-        if (!juego.pausado) { //cuenta solo si no está pasado
+        if (!juego.pausado) { //cuenta solo si no está pausado
             juego.tiempoRestante--;
             actualizarContador();
             //verificar si se acabó el tiempo
@@ -323,8 +344,17 @@ function actualizarContador() {
 
 //terminar el juegop
 function juegoTerminado() {
-    mostrarMensaje(`juego terminado, la palabra era: "${juego.palabra}"`, 'error');
-    setTimeout(() => reiniciarJuego(), 3000); // reinicia el juego automáticamente
+    mostrarMensaje(`Juego terminado, la palabra era: "${juego.palabra}"`, 'error');
+
+    const imagenResultado = document.getElementById('imagenResultado');
+    imagenResultado.src = 'img/perdio.png';  // Cambia esta ruta si tu imagen está en otro lugar
+    imagenResultado.style.display = 'block';
+    imagenResultado.style.background = '#ffffff';
+
+    setTimeout(() => {
+        imagenResultado.style.display = 'none';
+        reiniciarJuego();
+    }, 3000); // Espera 3 segundos para reiniciar el juego
 }
 
 //Pausar / reanudar el juego
@@ -335,10 +365,10 @@ function alternarPausa() {
     juego.pausado = !juego.pausado;
 
     if (juego.pausado) {
-        elementos.pauseBtn.textContent = '▶️ Reanudar';
+        elementos.pauseBtn.textContent = 'Reanudar';
         mostrarMensaje('Juego en pausa.', 'info');
     } else {
-        elementos.pauseBtn.textContent = '⏸️ Pausa';
+        elementos.pauseBtn.textContent = 'Pausa';
         mostrarMensaje('Juego reanudado.', 'success');
     }
 }
@@ -353,6 +383,7 @@ function terminarJuego() {
     // volver a mostrar boton iniciar
     elementos.startBtn.style.display = 'inline-block';
     elementos.pauseBtn.style.display = 'none';
+    elementos.resolverBtn.style.display = 'none';
 }
 
 function resolverPalabra() {
@@ -365,23 +396,18 @@ function resolverPalabra() {
     document.querySelectorAll('.letter-btn').forEach(btn => btn.disabled = true);
     actualizarPantalla();
     mostrarMensaje(`¡Palabra resuelta! Era "${juego.palabra}".`, 'success');
-    setTimeout(() => siguientePalabra(), 1500); //para pasar a la siguiente palabra después de 1.5 segundos
+
+    const imagenResultado = document.getElementById('imagenResultado');
+    imagenResultado.src = `img/${palabras[juego.palabraActual].imagen}`;
+    imagenResultado.style.display = 'block';
+
+    setTimeout(() => {
+        imagenResultado.style.display = 'none';
+        siguientePalabra();
+    }, 2000);
 }
 
-//para mostrar la imagen:
-function mostrarImagenResultado(tipo) {
-    const imagen = document.getElementById('imagenResultado');
-
-    if (tipo === 'ganar') {
-        imagen.src = '/images/ganaste.png'; // Asegúrate que esta ruta sea válida
-    } else if (tipo === 'rendirse') {
-        imagen.src = '/img/.png'; // Cambia el nombre según tu imagen
-    }
-
-    imagen.style.display = 'block';
-}
-
-// Llama esta función cuando el jugador gane o se rinda
+// Llama esta función cuando el jugador gane o se rinda para terminar el juego
 function verificarResultado(juegoGanado, jugadorSeRindio) {
     if (juegoGanado) {
         mostrarImagenResultado('ganar');
